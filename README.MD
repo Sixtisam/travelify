@@ -1,4 +1,4 @@
-= Travelify
+# Travelify
 
 Simplify your travels.
 
@@ -12,7 +12,7 @@ Features
 -   Unlimited number of travel mates
 -   Multiple currency support (even in same trip!)
 
-== How to run
+## How to run
 
 -   `npm install`
 -   `expo start`
