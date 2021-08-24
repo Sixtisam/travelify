@@ -1,0 +1,18 @@
+
+Hope you enjoy your new logo, here are the people that
+made your beautiful logo happen :)
+font name: HKGrotesk-Bold
+font link: https://hanken.co/product/hk-grotesk/
+font author: Hanken Design Co.
+font author site: https://hanken.co/
+Slogan Font: Questrial-Regular.otf
+
+icon designer: Ben King
+icon designer link: /Kinger
+        
+
+fontColor: {"hex":"#FFFFFF"}
+bgColor: {"hex":"#37839F"}
+iconColor: {"hex":"#FFFFFF"}
+sloganColor: {"hex":"#FFFFFF"}
+      

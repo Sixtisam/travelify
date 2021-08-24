@@ -61,7 +61,7 @@ export default function ExchangeRatesTripScreen() {
         keyExtractor={(item) => item.currency}
         ItemSeparatorComponent={() => <Divider />}
         renderItem={({ item }) => (
-          <HStack paddingX={5} paddingY={3} alignItems="center">
+          <HStack paddingX={2} paddingY={3} alignItems="center">
             <Text fontSize="md">{item.currency}</Text>
             <Icon mx={2} size="xs" as={<Feather name="arrow-right" size={24} color="black" />} />
             <Text fontSize="md">{baseCurrency} </Text>

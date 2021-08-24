@@ -1,8 +1,9 @@
-import { AddIcon, AlertDialog, Button, Divider, Fab, HStack, Text, VStack, useDisclose } from "native-base";
-import React, { useMemo, useRef, useState } from "react";
+import { AlertDialog, Box, Button, Divider, Fab, Flex, HStack, Icon, IconButton, Text, VStack, useDisclose } from "native-base";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import DeleteSwipeBox from "./DeleteSwipeBox";
+import { Feather } from "@expo/vector-icons";
 import MyPressable from "./MyPressable";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { View } from "react-native";
@@ -46,10 +47,17 @@ export default function TripListScreen() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const data = useSelector(getAllTripsSortedSelector);
-  const onCreateTrip = () => {
+  const onCreateTrip = useCallback(() => {
     navigation.navigate("CreateTrip");
-  };
-  const listViewRef = useRef();
+  }, []);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <IconButton variant="solid" icon={<Icon size="sm" color="white" as={<Feather name="plus" />} />} onPress={onCreateTrip} />
+      ),
+    });
+  }, [onCreateTrip]);
 
   const { isOpen: tripConfirmDialogOpen, onOpen: openTripConfirmDialog, onClose: closeTripConfirmDialog } = useDisclose();
   const [tripToDelete, setTripToDelete] = useState(null);
@@ -64,49 +72,50 @@ export default function TripListScreen() {
     setTripToDelete(null);
   };
 
-  if (data.length === 0) {
-    return (
-      <View flex={1}>
+  return (
+    <SwipeListView
+      data={data}
+      renderItem={({ item }) => <TripListItem trip={item} />}
+      keyExtractor={(item) => item.id}
+      ItemSeparatorComponent={() => <Divider />}
+      renderHiddenItem={(data, _) => <DeleteSwipeBox onPress={() => preselectTripForDelete(data.item)} padding={30} />}
+      rightOpenValue={-90}
+      ListEmptyComponent={
         <VStack flex={1} alignItems="center" justifyContent="center">
           <Text fontSize="lg">You have no trips yet!</Text>
           <Button variant="link" onPress={onCreateTrip}>
             Create one
           </Button>
         </VStack>
-        <Fab renderInPortal={false} position="absolute" placement="bottom-right" size="lg" icon={<AddIcon />} onPress={onCreateTrip} />
-      </View>
-    );
-  }
-
-  return (
-    <View flex={1}>
-      <SwipeListView
-        data={data}
-        renderItem={({ item }) => <TripListItem trip={item} />}
-        keyExtractor={(item) => item.id}
-        ItemSeparatorComponent={() => <Divider />}
-        renderHiddenItem={(data, _) => <DeleteSwipeBox onPress={() => preselectTripForDelete(data.item)} padding={30} />}
-        rightOpenValue={-90}
-        ListFooterComponent={
-          <>
-            <Fab renderInPortal={false} position="absolute" size="lg" icon={<AddIcon />} onPress={onCreateTrip} />
-            <AlertDialog isOpen={tripConfirmDialogOpen} onClose={closeTripConfirmDialog} motionPreset={"fade"}>
-              <AlertDialog.Content>
-                <AlertDialog.Header fontSize="lg" fontWeight="bold">
-                  Delete trip
-                </AlertDialog.Header>
-                <AlertDialog.Body>Are you sure? You can&apos;t undo this action afterwards.</AlertDialog.Body>
-                <AlertDialog.Footer>
-                  <Button onPress={closeTripConfirmDialog}>Cancel</Button>
-                  <Button ml={3} _text={{ color: "white" }} onPress={onDeleteTrip}>
-                    Delete
-                  </Button>
-                </AlertDialog.Footer>
-              </AlertDialog.Content>
-            </AlertDialog>
-          </>
-        }
-      />
-    </View>
+      }
+      style={{ flex: 1 }}
+      contentContainerStyle={{flex: data.length === 0 ? 1 : undefined}}
+      ListFooterComponent={
+        <VStack>
+          <Box height={90} />
+          <Fab
+            renderInPortal={false}
+            position="absolute"
+            size="lg"
+            icon={<Icon as={<Feather name="plus" color="white" size={20} />} />}
+            onPress={onCreateTrip}
+          />
+          <AlertDialog isOpen={tripConfirmDialogOpen} onClose={closeTripConfirmDialog} motionPreset={"fade"}>
+            <AlertDialog.Content>
+              <AlertDialog.Header fontSize="lg" fontWeight="bold">
+                Delete trip
+              </AlertDialog.Header>
+              <AlertDialog.Body>Are you sure? You can&apos;t undo this action afterwards.</AlertDialog.Body>
+              <AlertDialog.Footer>
+                <Button onPress={closeTripConfirmDialog}>Cancel</Button>
+                <Button ml={3} _text={{ color: "white" }} onPress={onDeleteTrip}>
+                  Delete
+                </Button>
+              </AlertDialog.Footer>
+            </AlertDialog.Content>
+          </AlertDialog>
+        </VStack>
+      }
+    />
   );
 }

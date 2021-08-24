@@ -1,5 +1,6 @@
 import { Button, FormControl, Icon, Input, Select, VStack } from "native-base";
 import React, { useCallback, useMemo, useRef, useState } from "react";
+import { getCurrenciesSelector, getTripSelector } from "./logic/selectors";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 
@@ -7,13 +8,12 @@ import { Feather } from "@expo/vector-icons";
 import { ScrollView } from "react-native";
 import { createExpense } from "./data/store";
 import { getCurrentTimestampSec } from "./logic/util";
-import { getTripSelector } from "./logic/selectors";
 
 export default function CreateExpenseScreen() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const { tripId, mateId } = useRoute().params;
-  const availableCurrencies = useSelector((state) => state.config.currencies);
+  const availableCurrencies = useSelector(getCurrenciesSelector);
   const amountRef = useRef();
 
   const [formData, setFormData] = useState({
@@ -76,63 +76,58 @@ export default function CreateExpenseScreen() {
     setFormErrors(newFormErrors);
   };
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
       <VStack space={2} px={2} py={3}>
         <FormControl isRequired isInvalid={"amount" in formErrors}>
           <Input
+            keyboardType="numeric"
             ref={amountRef}
             autoFocus={true}
             value={formData.amount}
             onChangeText={(val) => setFormValue("amount", val)}
             placeholder="Amount..."
           />
-          {"amount" in formErrors ? (
-            <FormControl.ErrorMessage _text={{ fontSize: "xs", color: "error.500", fontWeight: 500 }}>
-              {formErrors["amount"]}
-            </FormControl.ErrorMessage>
-          ) : null}
+          {"amount" in formErrors ? <FormControl.ErrorMessage>{formErrors["amount"]}</FormControl.ErrorMessage> : null}
         </FormControl>
         <FormControl isRequired isInvalid={"mateId" in formErrors}>
           <Select
             placeholder="Mate..."
             selectedValue={formData?.mateId}
-            style={{ margin: 6 }}
             onValueChange={(val) => setFormValue("mateId", val)}
             _selectedItem={{
-              bg: "cyan.600",
-              endIcon: <Feather name="check" size={24} color="white" />,
+              bg: "primary.400",
             }}
           >
             {tripMates.map((mate) => (
-              <Select.Item label={mate.name} value={mate.id} key={mate.id} />
+              <Select.Item
+                label={mate.name}
+                value={mate.id}
+                key={mate.id}
+                _text={{ color: mate.id === formData.mateId ? "white" : "black" }}
+              />
             ))}
           </Select>
-          {"mateId" in formErrors ? (
-            <FormControl.ErrorMessage _text={{ fontSize: "xs", color: "error.500", fontWeight: 500 }}>
-              {formErrors["mateId"]}
-            </FormControl.ErrorMessage>
-          ) : null}
+          {"mateId" in formErrors ? <FormControl.ErrorMessage>{formErrors["mateId"]}</FormControl.ErrorMessage> : null}
         </FormControl>
         <FormControl isRequired isInvalid={"currency" in formErrors}>
           <Select
             placeholder="Currency..."
             selectedValue={formData?.currency}
-            style={{ margin: 6 }}
             onValueChange={(val) => setFormValue("currency", val)}
             _selectedItem={{
-              bg: "primary.500",
-              endIcon: <Feather name="check" size={24} color="white" />,
+              bg: "primary.400",
             }}
           >
             {availableCurrencies.map((currency) => (
-              <Select.Item label={currency} value={currency} key={currency} />
+              <Select.Item
+                label={currency}
+                value={currency}
+                key={currency}
+                _text={{ color: currency === formData.currency ? "white" : "black" }}
+              />
             ))}
           </Select>
-          {"currency" in formErrors ? (
-            <FormControl.ErrorMessage _text={{ fontSize: "xs", color: "error.500", fontWeight: 500 }}>
-              {formErrors["currency"]}
-            </FormControl.ErrorMessage>
-          ) : null}
+          {"currency" in formErrors ? <FormControl.ErrorMessage>{formErrors["currency"]}</FormControl.ErrorMessage> : null}
         </FormControl>
         <Button isFullWidth={true} onPress={onSubmit} startIcon={<Icon size="xs" as={<Feather name="save" color="white" />} />}>
           Submit

@@ -123,15 +123,17 @@ export default function TripDetailScreen() {
         </Button>
       </HStack>
       <DebtsList trip={trip} />
-      <Fab
-        renderInPortal={false}
-        placement="bottom-right"
-        position="absolute"
-        size="md"
-        icon={<Feather name="plus" size={20} color="white" />}
-        label={<Text color="white">Expense</Text>}
-        onPress={() => navigation.navigate("CreateExpense", { tripId })}
-      />
+      {mates.length === 0 ? null : (
+        <Fab
+          renderInPortal={false}
+          placement="bottom-right"
+          position="absolute"
+          size="md"
+          icon={<Feather name="plus" size={20} color="white" />}
+          label={<Text color="white">Expense</Text>}
+          onPress={() => navigation.navigate("CreateExpense", { tripId })}
+        />
+      )}
 
       <Box height={100}>{/*space-for-fab*/}</Box>
       <AlertDialog isOpen={delConfirmDialogOpen} onClose={onDelConfirmDialogClose} motionPreset={"fade"}>
@@ -166,7 +168,9 @@ export default function TripDetailScreen() {
       disableRightSwipe={true}
       ListEmptyComponent={
         <VStack alignItems="center">
-          <Text fontSize="lg" m={3}>You have no mates yet!</Text>
+          <Text fontSize="lg" m={3}>
+            You have no mates yet!
+          </Text>
         </VStack>
       }
       ListHeaderComponent={aboveList}

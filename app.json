@@ -1,33 +1,37 @@
 {
   "expo": {
-	"entryPoint": "./src/entrypoint.js",
-    "name": "travelify2",
-    "slug": "travelify2",
-    "version": "1.0.0",
+    "entryPoint": "./src/entrypoint.js",
+    "name": "Travelify",
+    "privacy": "public",
+    "slug": "travelify",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#37839f"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
+      "backgroundColor": "#ffffff",
+      "package": "net.skeeks.travelify2",
+      "versionCode": 2,
+      "icon": "./assets/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#37839f"
+      },
+      "splash": {
+        "backgroundColor": "#37839f"
       }
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     }
   }
 }

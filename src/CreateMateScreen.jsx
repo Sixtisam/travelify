@@ -57,6 +57,7 @@ export default function CreateMateScreen() {
   return (
     <Box flex={1}>
       <FlatList
+        keyboardShouldPersistTaps="handled"
         data={mateNames}
         keyExtractor={(item) => item}
         renderItem={({ item: name }) => (
@@ -74,17 +75,7 @@ export default function CreateMateScreen() {
               <Text fontSize="md">New</Text>
               <FormControl isRequired isInvalid={"name" in formErrors}>
                 <Input size="md" placeholder="Name" value={mateName} onChangeText={(text) => setMateName(text)} />
-                {"name" in formErrors ? (
-                  <FormControl.ErrorMessage
-                    _text={{
-                      fontSize: "xs",
-                      color: "error.500",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {formErrors["name"]}
-                  </FormControl.ErrorMessage>
-                ) : null}
+                {"name" in formErrors ? <FormControl.ErrorMessage>{formErrors["name"]}</FormControl.ErrorMessage> : null}
               </FormControl>
               <Button
                 onPress={() => onFormSubmit(mateName)}

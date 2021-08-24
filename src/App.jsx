@@ -11,6 +11,7 @@ import {
   Inter_900Black,
   useFonts,
 } from "@expo-google-fonts/inter";
+import { Linking, StatusBar } from "react-native";
 import React, { useEffect, useState } from "react";
 import { persistor, store } from "./data/store";
 
@@ -18,7 +19,6 @@ import AboutScreen from "./AboutScreen";
 import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CoreStackNavigator from "./CoreStackNavigator";
-import { Linking } from "react-native";
 import NavDrawerContent from "./NavDrawerContent";
 import { NavigationContainer } from "@react-navigation/native";
 import { PersistGate } from "redux-persist/integration/react";
@@ -77,6 +77,7 @@ export default function App() {
 
   return (
     <NativeBaseProvider theme={theme}>
+      <StatusBar backgroundColor={theme.colors.primary["500"]} barStyle="light-content" />
       <ReduxProvider store={store}>
         <PersistGate loading={<AppLoading />} persistor={persistor}>
           {!(fontsLoaded && isNavReady) ? (
