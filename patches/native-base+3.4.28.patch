@@ -1,0 +1,14 @@
+diff --git a/node_modules/native-base/src/components/primitives/Input/Input.tsx b/node_modules/native-base/src/components/primitives/Input/Input.tsx
+index 7902b1a..ef068a9 100644
+--- a/node_modules/native-base/src/components/primitives/Input/Input.tsx
++++ b/node_modules/native-base/src/components/primitives/Input/Input.tsx
+@@ -153,7 +153,8 @@ const Input = (
+         secureTextEntry={type === 'password'}
+         accessible
+         accessibilityLabel={ariaLabel || accessibilityLabel}
+-        editable={isDisabled || isReadOnly ? false : true}
++        editable={isDisabled || isReadOnly || props.editable === false ? false : true}
++        readOnly={isDisabled || isReadOnly || props.editable === false}
+         w={isFullWidth ? '100%' : undefined}
+         {...nonLayoutProps}
+         {...resolvedFontFamily}

@@ -6,6 +6,7 @@ import { createTrip } from "../logic/trips";
 import { fetchExchangeRates } from "../logic/exchangerates";
 import persistReducer from "redux-persist/es/persistReducer";
 import persistStore from "redux-persist/es/persistStore";
+import * as Localization from "expo-localization";
 
 export const tripsSlice = createSlice({
   name: "trips",
@@ -58,10 +59,22 @@ export const mateNamesSlice = createSlice({
 });
 export const { addMateName, deleteMateName } = mateNamesSlice.actions;
 
+const initialCurrencies = () => {
+  const ls = new Set();
+  ls.add("CHF");
+  ls.add("EUR");
+  ls.add("USD");
+  ls.add("GBP");
+  ls.add("NOK");
+  ls.add("IDR");
+  ls.add(Localization.currency);
+  return Array.from(ls);
+}
+
 export const configSlice = createSlice({
   name: "config",
   initialState: {
-    currencies: ["CHF", "EUR", "USD", "GBP", "NOK"],
+    currencies: initialCurrencies(),
   },
   reducers: {
     addCurrency: (state, { payload }) => {

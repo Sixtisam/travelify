@@ -93,7 +93,7 @@ export default function TripDetailScreen() {
       <HStack justifyContent="space-between" alignItems="center" px={2} py={2}>
         <Text fontSize="md">Total cost</Text>
         <Text fontSize="md">
-          {formatMoney(totalCost)} {trip?.baseCurrency}
+          {formatMoney(totalCost, trip?.baseCurrency)}
         </Text>
       </HStack>
       <Divider />

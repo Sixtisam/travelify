@@ -1,17 +1,16 @@
-import { AlertDialog, Box, Button, Divider, Fab, Flex, HStack, Icon, IconButton, Text, VStack, useDisclose } from "native-base";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AlertDialog, Box, Button, Divider, Fab, HStack, Icon, IconButton, Text, VStack, useDisclose } from "native-base";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import DeleteSwipeBox from "./DeleteSwipeBox";
 import { Feather } from "@expo/vector-icons";
-import MyPressable from "./MyPressable";
-import { SwipeListView } from "react-native-swipe-list-view";
-import { View } from "react-native";
-import { deleteTrip } from "./data/store";
-import { formatMoney } from "./logic/util";
-import { getAllTripsSortedSelector } from "./logic/selectors";
 import { useNavigation } from "@react-navigation/native";
+import { SwipeListView } from "react-native-swipe-list-view";
+import DeleteSwipeBox from "./DeleteSwipeBox";
+import MyPressable from "./MyPressable";
+import { deleteTrip } from "./data/store";
 import { useTotalTripCost } from "./logic/hooks";
+import { getAllTripsSortedSelector } from "./logic/selectors";
+import { formatMoney } from "./logic/util";
 
 export function TripListItem({ trip }) {
   const navigation = useNavigation();
@@ -34,9 +33,7 @@ export function TripListItem({ trip }) {
           <Text fontSize="sm">{mateNames}</Text>
         </VStack>
         <VStack justifyContent="center" alignItems="center" m={4}>
-          <Text>
-            {formatMoney(totalTripCost)} {trip.baseCurrency}
-          </Text>
+          <Text>{formatMoney(totalTripCost, trip.baseCurrency)}</Text>
         </VStack>
       </HStack>
     </MyPressable>
@@ -89,7 +86,7 @@ export default function TripListScreen() {
         </VStack>
       }
       style={{ flex: 1 }}
-      contentContainerStyle={{flex: data.length === 0 ? 1 : undefined}}
+      contentContainerStyle={{ flex: data.length === 0 ? 1 : undefined }}
       ListFooterComponent={
         <VStack>
           <Box height={90} />

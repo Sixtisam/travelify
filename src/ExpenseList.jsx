@@ -16,7 +16,7 @@ export default function ExpenseList({ expenses, onDeleteExpense, ListHeaderCompo
           <HStack width="100%" paddingX={2} paddingY={6} justifyContent="space-between" backgroundColor={bgColor}>
             <Text fontSize="lg">{formatDateTime(item.evtCreated)}</Text>
             <Text fontSize="lg">
-              {formatMoney(item.amount)} {item.currency}
+              {formatMoney(item.amount, item.currency)}
             </Text>
           </HStack>
         )}

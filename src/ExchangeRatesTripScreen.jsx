@@ -1,8 +1,8 @@
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { Box, Divider, HStack, Icon, IconButton, Text, Toast, VStack } from "native-base";
 import React, { useCallback, useMemo } from "react";
-import { formatMoney, roundExchangeRate } from "./logic/util";
 import { useDispatch, useSelector } from "react-redux";
-import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { formatMoney, roundExchangeRate } from "./logic/util";
 
 import { Feather } from "@expo/vector-icons";
 import { FlatList } from "react-native";
@@ -16,6 +16,10 @@ export default function ExchangeRatesTripScreen() {
   const trip = useSelector((state) => getTripSelector(state, { tripId }));
   const baseCurrency = trip.baseCurrency;
   const exchangeRates = useMemo(() => {
+    if (!trip.exchangeRates) {
+      dispatch(fetchExchangeRates({ tripId: tripId, baseCurrency: trip.baseCurrency }));
+      return [];
+    }
     return Object.entries(trip.exchangeRates).map(([currency, rate]) => ({
       currency,
       rate,
@@ -67,11 +71,30 @@ export default function ExchangeRatesTripScreen() {
             <Text fontSize="md">{baseCurrency} </Text>
             <Box flex={1} />
             <Text fontSize="md">
-              1.00 {baseCurrency} = {formatMoney(roundExchangeRate(item.rate))} {item.currency}
+              <MoneyComparison fromCurrency={baseCurrency} toCurrency={item.currency} toValue={item.rate} />
             </Text>
           </HStack>
         )}
       />
     </VStack>
+  );
+}
+
+function MoneyComparison({ fromCurrency, toCurrency, toValue }) {
+  const [calcFromVal, calcToVal] = useMemo(() => {
+    let f0 = 1.0;
+    let t0 = toValue;
+
+    while (t0 < 0.05) {
+      f0 *= 10.0;
+      t0 *= 10.0;
+    }
+    return [formatMoney(roundExchangeRate(f0), fromCurrency), formatMoney(roundExchangeRate(t0), toCurrency)];
+  }, [toValue, fromCurrency, toCurrency]);
+
+  return (
+    <>
+      {calcFromVal} = {calcToVal}
+    </>
   );
 }

@@ -110,7 +110,7 @@ export default function CreateTripScreen() {
                 }}
               />
             ))}
-          </Select>{" "}
+          </Select>
           {"baseCurrency" in formErrors ? <FormControl.ErrorMessage>{formErrors["baseCurrency"]}</FormControl.ErrorMessage> : null}
         </FormControl>
       </VStack>
@@ -123,8 +123,8 @@ export default function CreateTripScreen() {
         <View key={name}>
           {index !== 0 ? <Divider /> : null}
           <MyPressable onPress={() => toggleMate(name)}>
-            <HStack justifyContent="space-between" px={2} py={4} shadow={2}>
-              <Text fontSize="lg">{name}</Text>
+            <HStack justifyContent="space-between" alignItems="center" px={2} py={5} shadow={2}>
+              <Text fontSize="lg" mt={-1}>{name}</Text>
               <Icon size="sm" color={include ? greenColor : "black"} as={include ? <Feather name="check" /> : <Feather name="plus" />} />
             </HStack>
           </MyPressable>

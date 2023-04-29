@@ -5,7 +5,7 @@ import * as Localization from "expo-localization";
 import { de, en } from "date-fns/locale";
 
 import format from "date-fns/format";
-import { v4 as uuidv4 } from "uuid";
+import uuid from "react-native-uuid";
 
 const locale = (() => {
   if (Localization.locale.startsWith("de")) {
@@ -15,11 +15,12 @@ const locale = (() => {
   }
 })();
 
-export const generateId = uuidv4;
+export const generateId = () => uuid.v4();
 
-export const formatMoney = (money) => {
+export const formatMoney = (money, currency) => {
   if (money == null) return "-";
-  return (Math.round(money * 100) / 100).toFixed(2);
+  const formatter = new Intl.NumberFormat(Localization.locale, { style: "currency", currency });
+  return formatter.format((Math.round(money * 100) / 100).toFixed(2));
 };
 
 export const roundExchangeRate = (rate) => Math.round(rate * 100000) / 100000;

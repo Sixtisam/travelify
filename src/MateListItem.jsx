@@ -11,7 +11,7 @@ export default function MateListItem({ mate, trip }) {
     <HStack alignItems="center" justifyContent="space-between" px={2} py={4}>
       <Text fontSize="xl">{mate.name}</Text>
       <Text fontSize="lg">
-        {formatMoney(cost)} {trip.baseCurrency}
+        {formatMoney(cost, trip.baseCurrency)}
       </Text>
     </HStack>
   );

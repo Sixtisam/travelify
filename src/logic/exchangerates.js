@@ -3,7 +3,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // https://app.abstractapi.com/api/exchange-rates/documentation
 const WEBSERVICE_BASE_URL = "https://exchange-rates.abstractapi.com/v1";
-const WEBSERVICE_API_KEY = "b982bf98579448628aecca2fae96a78f";
+const WEBSERVICE_API_KEY = "c92c9e9593a846a699cb5bfe3c9e67c3";
 
 export const fetchExchangeRates = createAsyncThunk("trips/fetchExchangeRate", async ({ baseCurrency, tripId }, thunkAPI) => {
   const to = thunkAPI.getState().config.currencies.join(",");
@@ -15,8 +15,9 @@ export const fetchExchangeRates = createAsyncThunk("trips/fetchExchangeRate", as
         Accept: "application/json",
       },
     });
-
+    
     const data = await response.json();
+    console.log(data);
     return {
       tripId: tripId,
       baseCurrency: baseCurrency,

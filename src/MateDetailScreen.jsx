@@ -65,7 +65,7 @@ export default function MateDetailScreen() {
           Total expenses
         </Text>
         <Text fontSize="md" fontWeight="bold">
-          {formatMoney(totalCost)} {trip?.baseCurrency}
+          {formatMoney(totalCost, trip?.baseCurrency)}
         </Text>
       </HStack>
       <Divider />

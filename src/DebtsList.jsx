@@ -15,9 +15,9 @@ export default function DebtsList({ trip }) {
   }, [trip]);
 
   const onDebtPress = (debt) => {
-    Clipboard.setString(debt.amount + "");
+    Clipboard.setStringAsync(debt.amount + "");
     Toast.show({
-      title: `Copied ${formatMoney(debt.amount)} to clipboard!`,
+      title: `Copied ${formatMoney(debt.amount, trip.baseCurrency)} to clipboard!`,
     });
   };
 
@@ -37,7 +37,7 @@ export default function DebtsList({ trip }) {
               <Text fontSize="lg">{trip.mates[debt.to].name}</Text>
               <Box flex={1} />
               <Text fontSize="lg">
-                {formatMoney(debt.amount)} {trip.baseCurrency}
+                {formatMoney(debt.amount, trip.baseCurrency)}
               </Text>
             </HStack>
           </MyPressable>
