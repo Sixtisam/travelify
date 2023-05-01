@@ -1,13 +1,13 @@
-import { AlertDialog, Box, Button, Divider, Fab, HStack, Icon, IconButton, Text, VStack, useDisclose } from "native-base";
+import { AddIcon, Box, Button, Divider, Fab, HStack, HamburgerIcon, Text, VStack } from "native-base";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { SwipeListView } from "react-native-swipe-list-view";
 import DeleteSwipeBox from "./DeleteSwipeBox";
+import DeleteTripAlert from "./DeleteTripAlert";
 import MyPressable from "./MyPressable";
-import { deleteTrip } from "./data/store";
+import NavHeaderButton from "./NavHeaderButtton";
 import { useTotalTripCost } from "./logic/hooks";
 import { getAllTripsSortedSelector } from "./logic/selectors";
 import { formatMoney } from "./logic/util";
@@ -41,7 +41,6 @@ export function TripListItem({ trip }) {
 }
 
 export default function TripListScreen() {
-  const dispatch = useDispatch();
   const navigation = useNavigation();
   const data = useSelector(getAllTripsSortedSelector);
   const onCreateTrip = useCallback(() => {
@@ -50,24 +49,11 @@ export default function TripListScreen() {
 
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <IconButton variant="solid" icon={<Icon size="sm" color="white" as={<Feather name="plus" />} />} onPress={onCreateTrip} />
-      ),
+      headerRight: () => <NavHeaderButton icon={HamburgerIcon} onPress={() => navigation.openDrawer()} />,
     });
-  }, [onCreateTrip]);
+  }, [navigation]);
 
-  const { isOpen: tripConfirmDialogOpen, onOpen: openTripConfirmDialog, onClose: closeTripConfirmDialog } = useDisclose();
   const [tripToDelete, setTripToDelete] = useState(null);
-  const preselectTripForDelete = (trip) => {
-    setTripToDelete(trip.id);
-    openTripConfirmDialog();
-  };
-
-  const onDeleteTrip = () => {
-    dispatch(deleteTrip({ tripId: tripToDelete }));
-    closeTripConfirmDialog();
-    setTripToDelete(null);
-  };
 
   return (
     <SwipeListView
@@ -75,7 +61,7 @@ export default function TripListScreen() {
       renderItem={({ item }) => <TripListItem trip={item} />}
       keyExtractor={(item) => item.id}
       ItemSeparatorComponent={() => <Divider />}
-      renderHiddenItem={(data, _) => <DeleteSwipeBox onPress={() => preselectTripForDelete(data.item)} padding={30} />}
+      renderHiddenItem={(data, _) => <DeleteSwipeBox onPress={() => setTripToDelete(data.item.id)} padding={30} />}
       rightOpenValue={-90}
       ListEmptyComponent={
         <VStack flex={1} alignItems="center" justifyContent="center">
@@ -90,27 +76,8 @@ export default function TripListScreen() {
       ListFooterComponent={
         <VStack>
           <Box height={90} />
-          <Fab
-            renderInPortal={false}
-            position="absolute"
-            size="lg"
-            icon={<Icon as={<Feather name="plus" color="white" size={20} />} />}
-            onPress={onCreateTrip}
-          />
-          <AlertDialog isOpen={tripConfirmDialogOpen} onClose={closeTripConfirmDialog} motionPreset={"fade"}>
-            <AlertDialog.Content>
-              <AlertDialog.Header fontSize="lg" fontWeight="bold">
-                Delete trip
-              </AlertDialog.Header>
-              <AlertDialog.Body>Are you sure? You can&apos;t undo this action afterwards.</AlertDialog.Body>
-              <AlertDialog.Footer>
-                <Button onPress={closeTripConfirmDialog}>Cancel</Button>
-                <Button ml={3} _text={{ color: "white" }} onPress={onDeleteTrip}>
-                  Delete
-                </Button>
-              </AlertDialog.Footer>
-            </AlertDialog.Content>
-          </AlertDialog>
+          <Fab renderInPortal={false} position="absolute" size="lg" icon={<AddIcon />} onPress={onCreateTrip} />
+          <DeleteTripAlert show={!!tripToDelete} tripId={tripToDelete} hide={() => setTripToDelete(null)} />
         </VStack>
       }
     />

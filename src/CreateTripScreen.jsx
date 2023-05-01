@@ -1,14 +1,14 @@
-import { Button, Divider, FormControl, HStack, Icon, IconButton, Input, Select, Text, VStack, View, useToken } from "native-base";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { AddIcon, Button, CheckIcon, Divider, FormControl, HStack, Input, Select, Text, VStack, View, useToken } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector, useStore } from "react-redux";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
-import { Feather } from "@expo/vector-icons";
-import MyPressable from "./MyPressable";
 import { ScrollView } from "react-native";
-import { createTrip } from "./logic/trips";
+import MyPressable from "./MyPressable";
+import NavHeaderButton from "./NavHeaderButtton";
 import { fetchExchangeRates } from "./logic/exchangerates";
 import { getCurrenciesSelector } from "./logic/selectors";
+import { createTrip } from "./logic/trips";
 
 export default function CreateTripScreen() {
   const navigation = useNavigation();
@@ -77,18 +77,14 @@ export default function CreateTripScreen() {
   }, [formData, mateNames, validate, dispatch, navigation]);
 
   useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <IconButton variant="solid" icon={<Icon size="sm" color="white" as={<Feather name="save" />} />} onPress={onSubmit} />
-      ),
-    });
+    navigation.setOptions({ headerRight: () => <NavHeaderButton icon="check" onPress={onSubmit} /> });
   }, [onSubmit]);
 
   return (
     <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
       <VStack alignItems="center" px={2} marginTop={2} space={1}>
         <FormControl isRequired isInvalid={"title" in formErrors}>
-          <Input placeholder="Title..." value={formData.title} onChangeText={(val) => setFieldData("title", val)} />
+          <Input placeholder="Title..." value={formData.title} autoFocus onChangeText={(val) => setFieldData("title", val)} />
           {"title" in formErrors ? <FormControl.ErrorMessage>{formErrors["title"]}</FormControl.ErrorMessage> : null}
         </FormControl>
         <FormControl isRequired isInvalid={"baseCurrency" in formErrors}>
@@ -96,9 +92,7 @@ export default function CreateTripScreen() {
             placeholder="Base Currency..."
             selectedValue={formData.baseCurrency}
             onValueChange={(val) => setFieldData("baseCurrency", val)}
-            _selectedItem={{
-              bg: "primary.400",
-            }}
+            _selectedItem={{ bg: "primary.400" }}
           >
             {availableCurrencies.map((currency) => (
               <Select.Item
@@ -124,13 +118,15 @@ export default function CreateTripScreen() {
           {index !== 0 ? <Divider /> : null}
           <MyPressable onPress={() => toggleMate(name)}>
             <HStack justifyContent="space-between" alignItems="center" px={2} py={5} shadow={2}>
-              <Text fontSize="lg" mt={-1}>{name}</Text>
-              <Icon size="sm" color={include ? greenColor : "black"} as={include ? <Feather name="check" /> : <Feather name="plus" />} />
+              <Text fontSize="lg" mt={-1}>
+                {name}
+              </Text>
+              {include ? <CheckIcon size="sm" color={greenColor} mr={2} /> : <AddIcon size="sm" mr={2} />}
             </HStack>
           </MyPressable>
         </View>
       ))}
-      <Button m={2} onPress={onSubmit} startIcon={<Icon size="xs" as={<Feather name="save" />} />}>
+      <Button m={2} onPress={onSubmit} startIcon={<CheckIcon />}>
         Save
       </Button>
     </ScrollView>

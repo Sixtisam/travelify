@@ -1,17 +1,16 @@
 import * as Clipboard from "expo-clipboard";
 
-import { Box, Divider, HStack, Heading, Icon, Text, Toast } from "native-base";
+import { ArrowForwardIcon, Box, Divider, HStack, Heading, Text, Toast } from "native-base";
 import React, { useMemo } from "react";
 
-import { Feather } from "@expo/vector-icons";
 import { FlatList } from "react-native";
 import MyPressable from "./MyPressable";
-import { calcDebts } from "./logic/calc-debts";
+import { calcDebts as calcOptimalBalancing } from "./logic/calc-debts";
 import { formatMoney } from "./logic/util";
 
 export default function DebtsList({ trip }) {
   const debts = useMemo(() => {
-    return calcDebts(trip);
+    return calcOptimalBalancing(trip);
   }, [trip]);
 
   const onDebtPress = (debt) => {
@@ -33,12 +32,10 @@ export default function DebtsList({ trip }) {
           <MyPressable onPress={() => onDebtPress(debt)}>
             <HStack key={index} px={2} py={4} alignItems="center" justifyContent="center">
               <Text fontSize="lg">{trip.mates[debt.from].name}</Text>
-              <Icon marginX={2} size="xs" as={<Feather name="arrow-right" />} />
+              <ArrowForwardIcon mx={2} size="xs" />
               <Text fontSize="lg">{trip.mates[debt.to].name}</Text>
               <Box flex={1} />
-              <Text fontSize="lg">
-                {formatMoney(debt.amount, trip.baseCurrency)}
-              </Text>
+              <Text fontSize="lg">{formatMoney(debt.amount, trip.baseCurrency)}</Text>
             </HStack>
           </MyPressable>
         )}

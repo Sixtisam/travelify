@@ -1,14 +1,14 @@
-import { Box, Button, Divider, FormControl, HStack, Icon, Input, Text, VStack } from "native-base";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { Box, Button, CheckIcon, ChevronRightIcon, Divider, FormControl, HStack, Input, Text, VStack } from "native-base";
 import React, { useCallback, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { addMateName, createMate } from "./data/store";
 import { generateId, getCurrentTimestampSec } from "./logic/util";
-import { useDispatch, useSelector } from "react-redux";
-import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 
-import { Feather } from "@expo/vector-icons";
 import { FlatList } from "react-native";
 import MyPressable from "./MyPressable";
 import { getMateNameProposalsSelector } from "./logic/selectors";
+import NavHeaderButton from "./NavHeaderButtton";
 
 export default function CreateMateScreen() {
   const { tripId } = useRoute().params;
@@ -16,13 +16,19 @@ export default function CreateMateScreen() {
   const dispatch = useDispatch();
   const mateNames = useSelector((state) => getMateNameProposalsSelector(state, { tripId }));
   const [mateName, setMateName] = useState("");
+  const [formErrors, setFormErrors] = useState({});
 
   useFocusEffect(
     useCallback(() => {
       setMateName("");
-    }, [])
+      navigation.setOptions({
+        headerRight: () => <NavHeaderButton icon="check" onPress={onFormSubmit} />,
+      });
+    }, [navigation, setMateName])
   );
-  const [formErrors, setFormErrors] = useState({});
+
+
+  
   const validate = () => {
     const newFormErrors = {};
     if (mateName == null || mateName.trim() === "") {
@@ -31,6 +37,8 @@ export default function CreateMateScreen() {
     setFormErrors(newFormErrors);
     return Object.values(newFormErrors).length === 0;
   };
+
+
   const onCreate = (name) => {
     dispatch(addMateName(name));
     dispatch(
@@ -40,11 +48,9 @@ export default function CreateMateScreen() {
           id: generateId(),
           name: name,
           evtCreated: getCurrentTimestampSec(),
-          expenses: [],
         },
       })
     );
-    // setMateName("");
     navigation.goBack();
   };
   const onFormSubmit = () => {
@@ -53,6 +59,7 @@ export default function CreateMateScreen() {
     }
     onCreate(mateName);
   };
+
 
   return (
     <Box flex={1}>
@@ -64,7 +71,7 @@ export default function CreateMateScreen() {
           <MyPressable onPress={() => onCreate(name)}>
             <HStack alignItems="center" justifyContent="space-between" p={4}>
               <Text fontSize="xl">{name}</Text>
-              <Icon size="sm" as={<Feather name="chevron-right" size={24} color="black" />} />
+              <ChevronRightIcon />
             </HStack>
           </MyPressable>
         )}
@@ -77,10 +84,7 @@ export default function CreateMateScreen() {
                 <Input size="md" placeholder="Name" value={mateName} onChangeText={(text) => setMateName(text)} />
                 {"name" in formErrors ? <FormControl.ErrorMessage>{formErrors["name"]}</FormControl.ErrorMessage> : null}
               </FormControl>
-              <Button
-                onPress={() => onFormSubmit(mateName)}
-                startIcon={<Icon size="sm" as={<Feather name="save" size={24} color="black" />} />}
-              >
+              <Button onPress={() => onFormSubmit(mateName)} startIcon={<CheckIcon />}>
                 Create mate
               </Button>
             </VStack>

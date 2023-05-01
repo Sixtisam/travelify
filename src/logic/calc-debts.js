@@ -1,66 +1,77 @@
-import { calcTotalMateCost } from "./hooks";
+import { getRateToTripBase } from "./hooks";
 
-export function calcDebts(trip) {
-  const mates = Object.values(trip.mates);
-  let entireAmount = 0; // in trip.baseCurrency
-  const matesWithTotalExpense = mates.map((mate) => {
-    const totalMateExpense = calcTotalMateCost(mate, trip);
-    entireAmount += totalMateExpense;
-    return {
-      id: mate.id,
-      name: mate.name,
-      totalExpense: totalMateExpense,
-    };
+export const calcDebts = (trip) => {
+  const debts = simplifyDebts(trip);
+  const transactions = calcOptimalBalancingTransactions(debts, 0);
+  return simplifyTransactions(transactions);
+};
+
+const calcOptimalBalancingTransactions = (debts, curr) => {
+  while (curr < debts.length && debts[curr][1] === 0) {
+    curr++;
+  }
+  if (curr === debts.length) {
+    return [];
+  }
+
+  let minTransactions = null;
+  let minTxLength = Number.MAX_SAFE_INTEGER;
+  for (let i = curr + 1; i < debts.length; i++) {
+    // if there is an inbalance between both
+    if (debts[i][1] * debts[curr][1] < 0) {
+      debts[i][1] += debts[curr][1];
+      const transactions = calcOptimalBalancingTransactions(debts, curr + 1);
+      if (transactions.length + 1 <= minTxLength) {
+        const newTxs = transactions.concat([{ from: debts[curr][0], to: debts[i][0], amount: debts[curr][1] }]);
+        minTransactions = pickBetterTransactionList(minTransactions || newTxs, newTxs);
+        minTxLength = minTransactions.length;
+      }
+      debts[i][1] -= debts[curr][1];
+    }
+  }
+  return minTransactions || [];
+};
+
+const pickBetterTransactionList = (txs1, txs2) => {
+  if (txs2.length < txs1.length) {
+    return txs2;
+  } else if (txs1.length < txs2.length) {
+    return txs1;
+  }
+  const transferredMoneyTxs1 = txs1.reduce((sum, curr) => sum + Math.abs(curr.amount), 0);
+  const transferredMoneyTxs2 = txs2.reduce((sum, curr) => sum + Math.abs(curr.amount), 0);
+  if (transferredMoneyTxs2 < transferredMoneyTxs1) {
+    return txs2;
+  } else {
+    return txs1;
+  }
+};
+
+const simplifyDebts = (trip) => {
+  const debtsMap = {};
+  Object.values(trip.expenses).forEach((expense) => {
+    const creditor = expense.mateId;
+    const rateToTripBase = getRateToTripBase(trip, expense.currency);
+    Object.entries(expense.shares).forEach(([debitor, amount]) => {
+      debtsMap[creditor] = (debtsMap[creditor] || 0.0) - amount * rateToTripBase;
+      debtsMap[debitor] = (debtsMap[debitor] || 0.0) + amount * rateToTripBase;
+    });
   });
-
-  // Goal: each mate has spent the same (aka the average)
-  const averageExpense = entireAmount / mates.length;
-
-  return matesWithTotalExpense.reduce((prevDebts, currMate) => {
-    if (currMate.totalExpense < averageExpense) {
-      // the mates with too less expenses will distribute money to the others
-      return prevDebts.concat(distributeMoney(averageExpense - currMate.totalExpense, averageExpense, currMate.id, matesWithTotalExpense));
-    } else {
-      return prevDebts;
-    }
-  }, []);
-}
-
-function distributeMoney(amountToDistribute, averageExpense, mateIdToSkip, mates) {
-  const debts = [];
-  let remainingToSpend = amountToDistribute;
-  for (let n in mates) {
-    const mate = mates[n];
-    if (mate.id === mateIdToSkip || mate.totalExpense <= averageExpense) {
-      continue;
-    }
-    if (mate.totalExpense - averageExpense >= remainingToSpend) {
-      // himself can give money to the other mate, but that other mate is still not at average
-      debts.push({ from: mateIdToSkip, to: mate.id, amount: remainingToSpend });
-      mate.totalExpense -= remainingToSpend;
-      remainingToSpend = 0;
-    } else {
-      // calc how much money the other needs to be at average (the other one will be at average after the transfer)
-      const needed = mate.totalExpense - averageExpense;
-      debts.push({ from: mateIdToSkip, to: mate.id, amount: needed });
-      mate.totalExpense -= needed;
-      remainingToSpend -= needed;
-    }
-
-    // if himself has spent enough money to be at average, return early
-    if (remainingToSpend === 0) break;
-  }
-
-  // check
-  if (Math.abs(amountToDistribute - debts.reduce((prev, curr) => curr.amount + prev, 0)) > 0.000000001) {
-    console.log(debts);
-    console.log("to reach: ", amountToDistribute);
-    console.log(
-      "reached: ",
-      debts.reduce((prev, curr) => curr.amount + prev, 0)
-    );
-    throw new Error("has not paid out all he needs to!");
-  }
-
+  const debts = Object.entries(debtsMap);
+  debts.sort((a, b) => Math.abs(a[1]) - Math.abs(b[1]));
   return debts;
-}
+};
+
+const simplifyTransactions = (transactions) => {
+  return transactions.map((tx) => {
+    if (tx.amount < 0) {
+      return {
+        from: tx.to,
+        to: tx.from,
+        amount: -tx.amount,
+      };
+    } else {
+      return tx;
+    }
+  });
+};

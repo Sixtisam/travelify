@@ -1,4 +1,3 @@
-import { HStack, NativeBaseProvider, Spinner } from "native-base";
 import {
   Inter_100Thin,
   Inter_200ExtraLight,
@@ -11,20 +10,21 @@ import {
   Inter_900Black,
   useFonts,
 } from "@expo-google-fonts/inter";
-import { Linking, StatusBar } from "react-native";
+import { HStack, NativeBaseProvider, Spinner } from "native-base";
 import React, { useEffect, useState } from "react";
+import { Linking, StatusBar } from "react-native";
 import { persistor, store } from "./data/store";
 
-import AboutScreen from "./AboutScreen";
-import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { NavigationContainer } from "@react-navigation/native";
+import AppLoading from "expo-app-loading";
+import { Provider as ReduxProvider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import AboutScreen from "./AboutScreen";
 import CoreStackNavigator from "./CoreStackNavigator";
 import NavDrawerContent from "./NavDrawerContent";
-import { NavigationContainer } from "@react-navigation/native";
-import { PersistGate } from "redux-persist/integration/react";
-import { Provider as ReduxProvider } from "react-redux";
 import SettingsScreen from "./SettingsScreen";
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import navTheme from "./nav-theme";
 import theme from "./theme";
 
@@ -91,11 +91,20 @@ export default function App() {
                 screenOptions={{
                   headerShown: false,
                   detachInactiveScreens: true,
+                  headerTintColor: navTheme.colors.background,
+                  headerStyle: { backgroundColor: navTheme.colors.primary },
+                  headerTitleStyle: {
+                    fontFamily: "Inter_600SemiBold",
+                  },
                 }}
                 drawerContent={(props) => <NavDrawerContent {...props} />}
               >
                 <Drawer.Screen name="Core" component={CoreStackNavigator} />
-                <Drawer.Screen name="Settings" component={SettingsScreen} />
+                <Drawer.Screen
+                  name="Settings"
+                  component={SettingsScreen}
+                  options={{ headerShown: true, headerBackgroundContainerStyle: { backgroundColor: theme.colors.primary[500] } }}
+                />
                 <Drawer.Screen name="About" component={AboutScreen} />
               </Drawer.Navigator>
             </NavigationContainer>

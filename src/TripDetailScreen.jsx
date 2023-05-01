@@ -1,31 +1,18 @@
-import {
-  AlertDialog,
-  Box,
-  Button,
-  Divider,
-  Fab,
-  HStack,
-  Heading,
-  Icon,
-  IconButton,
-  Text,
-  VStack,
-  useDisclose,
-  useToast,
-} from "native-base";
-import React, { useCallback, useState } from "react";
-import { deleteMate, deleteTrip } from "./data/store";
-import { formatDateTime, formatMoney } from "./logic/util";
-import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { AddIcon, Box, Button, Divider, Fab, HStack, Heading, Text, Toast, VStack } from "native-base";
+import React, { useCallback, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useSortedMates, useTotalTripCost } from "./logic/hooks";
+import { formatDateTime, formatMoney } from "./logic/util";
 
+import { SwipeListView } from "react-native-swipe-list-view";
 import DebtsList from "./DebtsList";
+import DeleteMateAlert from "./DeleteMateAlert";
 import DeleteSwipeBox from "./DeleteSwipeBox";
-import { Feather } from "@expo/vector-icons";
+import DeleteTripAlert from "./DeleteTripAlert";
 import MateListItem from "./MateListItem";
 import MyPressable from "./MyPressable";
-import { SwipeListView } from "react-native-swipe-list-view";
+import NavHeaderButton from "./NavHeaderButtton";
 import { fetchExchangeRates } from "./logic/exchangerates";
 import { getTripSelector } from "./logic/selectors";
 
@@ -34,32 +21,25 @@ export default function TripDetailScreen() {
   const navigation = useNavigation();
   const { tripId } = useRoute().params;
   const trip = useSelector((state) => getTripSelector(state, { tripId }));
+  const [aboutToDelete, setAboutToDelete] = useState(false);
+  const [mateToDelete, setMateToDelete] = useState(null);
   const totalCost = useTotalTripCost(trip);
-  const toast = useToast();
   const mates = useSortedMates(trip);
 
-  const onDeleteTrip = useCallback(() => {
-    dispatch(deleteTrip({ tripId }));
-    navigation.navigate("Home");
-  }, [trip]);
-  const onCreateMate = useCallback(() => {
-    navigation.navigate("CreateMate", { tripId });
-  }, []);
+  const onCreateMate = useCallback(() => navigation.navigate("CreateMate", { tripId }), []);
 
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({
         title: trip?.title,
-        headerRight: () => (
-          <IconButton variant="solid" icon={<Icon size="sm" color="white" as={<Feather name="trash-2" />} />} onPress={onDeleteTrip} />
-        ),
+        headerRight: () => <NavHeaderButton icon="trash" onPress={() => setAboutToDelete(true)} />,
       });
-    }, [trip?.title, onDeleteTrip])
+    }, [trip?.title, setAboutToDelete])
   );
 
   const onFetchExchangeRates = async () => {
     await dispatch(fetchExchangeRates({ tripId: tripId, baseCurrency: trip.baseCurrency }));
-    toast.show({
+    Toast.show({
       title: "Exchange rates refreshed!",
     });
   };
@@ -68,18 +48,6 @@ export default function TripDetailScreen() {
     navigation.navigate("ExchangeRatesTrip", { tripId });
   };
 
-  const { isOpen: delConfirmDialogOpen, onOpen: onDelConfirmDialogOpen, onClose: onDelConfirmDialogClose } = useDisclose();
-  const [mateToDelete, setMateToDelete] = useState(null);
-  const onPreselectMateForDelete = (mate) => {
-    setMateToDelete(mate.id);
-    onDelConfirmDialogOpen();
-  };
-
-  const onDeleteMate = () => {
-    onDelConfirmDialogClose();
-    dispatch(deleteMate({ tripId, mateId: mateToDelete }));
-    setMateToDelete(null);
-  };
   if (!trip) {
     return <Text fontSize="lg">Error</Text>;
   }
@@ -92,9 +60,7 @@ export default function TripDetailScreen() {
     <VStack space={2} marginTop={2}>
       <HStack justifyContent="space-between" alignItems="center" px={2} py={2}>
         <Text fontSize="md">Total cost</Text>
-        <Text fontSize="md">
-          {formatMoney(totalCost, trip?.baseCurrency)}
-        </Text>
+        <Text fontSize="md">{formatMoney(totalCost, trip?.baseCurrency)}</Text>
       </HStack>
       <Divider />
       <HStack justifyContent="space-between" alignItems="center" px={2} py={2}>
@@ -129,27 +95,15 @@ export default function TripDetailScreen() {
           placement="bottom-right"
           position="absolute"
           size="md"
-          icon={<Feather name="plus" size={20} color="white" />}
+          icon={<AddIcon />}
           label={<Text color="white">Expense</Text>}
           onPress={() => navigation.navigate("CreateExpense", { tripId })}
         />
       )}
 
       <Box height={100}>{/*space-for-fab*/}</Box>
-      <AlertDialog isOpen={delConfirmDialogOpen} onClose={onDelConfirmDialogClose} motionPreset={"fade"}>
-        <AlertDialog.Content>
-          <AlertDialog.Header fontSize="lg" fontWeight="bold">
-            Delete mate
-          </AlertDialog.Header>
-          <AlertDialog.Body>Are you sure? You can't undo this action afterwards.</AlertDialog.Body>
-          <AlertDialog.Footer>
-            <Button onPress={onDelConfirmDialogClose}>Cancel</Button>
-            <Button colorScheme="red" onPress={onDeleteMate} ml={3} _text={{ color: "white" }}>
-              Delete
-            </Button>
-          </AlertDialog.Footer>
-        </AlertDialog.Content>
-      </AlertDialog>
+      <DeleteMateAlert tripId={tripId} mate={mateToDelete} show={!!mateToDelete} hide={() => setMateToDelete(null)} />
+      <DeleteTripAlert tripId={tripId} show={aboutToDelete} hide={() => setAboutToDelete(false)} />
     </Box>
   );
 
@@ -163,7 +117,7 @@ export default function TripDetailScreen() {
           <MateListItem mate={mate} trip={trip} />
         </MyPressable>
       )}
-      renderHiddenItem={(data, _) => <DeleteSwipeBox onPress={() => onPreselectMateForDelete(data.item)} padding={14} />}
+      renderHiddenItem={(data, _) => <DeleteSwipeBox onPress={() => setMateToDelete(data.item)} padding={14} />}
       rightOpenValue={-70}
       disableRightSwipe={true}
       ListEmptyComponent={

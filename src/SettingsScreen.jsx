@@ -1,29 +1,31 @@
 import {
+  AddIcon,
   Button,
   Divider,
   FormControl,
   HStack,
+  HamburgerIcon,
   Heading,
-  Icon,
   IconButton,
   Input,
   Modal,
   Text,
-  VStack,
   useDisclose,
-  useScreenReaderEnabled,
 } from "native-base";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { addCurrency, addMateName, deleteCurrency, deleteMateName } from "./data/store";
 import { getCurrenciesSelector, getMateNamesSelector } from "./logic/selectors";
-import { useDispatch, useSelector } from "react-redux";
 
-import DeleteSwipeBox from "./DeleteSwipeBox";
-import { Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { SwipeListView } from "react-native-swipe-list-view";
+import DeleteSwipeBox from "./DeleteSwipeBox";
+import NavHeaderButton from "./NavHeaderButtton";
 
 export default function SettingsScreen() {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const mateNames = useSelector(getMateNamesSelector);
   const currencies = useSelector(getCurrenciesSelector);
   const listData = useMemo(() => {
@@ -70,9 +72,16 @@ export default function SettingsScreen() {
     setValueError(null);
   };
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => <></>,
+      headerRight: () => <NavHeaderButton icon={HamburgerIcon} mr={4} onPress={() => navigation.openDrawer()} />,
+    });
+  }, [navigation]);
+
   return (
-    <>
-      <Modal isOpen={isModalOpen} onClose={closeModal} size="full" avoidKeyboard justifyContent="flex-start">
+    <SafeAreaView>
+      <Modal isOpen={isModalOpen} onClose={closeModal} size="xl" avoidKeyboard justifyContent="center">
         <Modal.Content borderRadius={0}>
           <Modal.CloseButton />
           <Modal.Header>
@@ -115,27 +124,16 @@ export default function SettingsScreen() {
         renderSectionHeader={({ section }) => (
           <HStack px={2} py={4} pt={6} alignItems="center" justifyContent="space-between" bg="white">
             <Heading fontSize="2xl">{section.title}</Heading>
-            <IconButton
-              variant="solid"
-              size="md"
-              onPress={() => onChoseAddItem(section)}
-              icon={<Icon size="md" color="white" as={<Feather name="plus" />} />}
-            />
+            <IconButton mr={3} variant="solid" size="md" onPress={() => onChoseAddItem(section)} icon={<AddIcon size="sm" />} />
           </HStack>
         )}
         ItemSeparatorComponent={() => <Divider />}
-        ListHeaderComponent={
-          <VStack px={2} py={4} alignItems="flex-start">
-            <Heading size="2xl">Settings</Heading>
-            <Divider />
-          </VStack>
-        }
         previewRowKey={"0"}
         rightOpenValue={-70}
         previewOpenValue={-70}
         previewOpenDelay={500}
         disableRightSwipe={true}
       />
-    </>
+    </SafeAreaView>
   );
 }

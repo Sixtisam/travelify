@@ -15,17 +15,20 @@ export const tripsSlice = createSlice({
     deleteTrip: (state, { payload: { tripId } }) => {
       delete state[tripId];
     },
-    deleteExpense: (state, { payload: { tripId, mateId, expenseIndex } }) => {
-      state[tripId].mates[mateId].expenses.splice(expenseIndex, 1);
+    createMate: (state, { payload: { tripId, mate } }) => {
+      state[tripId].mates[mate.id] = { ...mate };
     },
     deleteMate: (state, { payload: { tripId, mateId } }) => {
       delete state[tripId].mates[mateId];
     },
-    createMate: (state, { payload: { tripId, mate } }) => {
-      state[tripId].mates[mate.id] = { ...mate };
+    createExpense: (state, { payload: { tripId, expense } }) => {
+      state[tripId].expenses[expense.id] = expense;
     },
-    createExpense: (state, { payload: { tripId, mateId, expense } }) => {
-      state[tripId].mates[mateId].expenses.unshift(expense);
+    updateExpense: (state, {payload: {tripId, expense}}) => {
+      state[tripId].expenses[expense.id] = expense;
+    },
+    deleteExpense: (state, { payload: { tripId, expense } }) => {
+      delete state[tripId].expenses[expense.id];
     },
   },
   extraReducers: (builder) => {
@@ -39,7 +42,7 @@ export const tripsSlice = createSlice({
     });
   },
 });
-export const { createMate, deleteExpense, deleteMate, deleteTrip, createExpense } = tripsSlice.actions;
+export const { createMate, deleteExpense, deleteMate, deleteTrip, createExpense, updateExpense } = tripsSlice.actions;
 
 export const mateNamesSlice = createSlice({
   name: "mateNames",

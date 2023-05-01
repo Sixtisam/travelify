@@ -3,9 +3,12 @@
     "name": "Travelify",
     "privacy": "public",
     "slug": "travelify",
-    "version": "3.0.0",
+    "version": "4.0.1",
+    "githubUrl": "https://github.com/Sixtisam/travelify",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "sdkVersion": "48.0.0",
+    "primaryColor": "#37839F",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -17,28 +20,37 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "plugins": [
+      "expo-localization"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "32cfa674-0728-47af-a1b3-4594dd3ceca6"
+      }
+    },
     "ios": {
       "supportsTablet": true
     },
+    "androidStatusBar": {
+      "backgroundColor": "#37839F",
+      "barStyle": "light-content"
+    },
     "android": {
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=net.skeeks.travelify2&hl=de_CH&gl=US",
       "permissions": [
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
       ],
       "backgroundColor": "#ffffff",
       "package": "net.skeeks.travelify2",
-      "versionCode": 2,
-      "icon": "./assets/icon.png",
+      "versionCode": 14,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon-foreground.png",
         "backgroundColor": "#37839f"
       },
       "splash": {
         "backgroundColor": "#37839f"
       }
     },
-    "plugins": [
-      "expo-localization"
-    ]
   }
 }

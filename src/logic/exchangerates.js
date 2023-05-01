@@ -17,7 +17,6 @@ export const fetchExchangeRates = createAsyncThunk("trips/fetchExchangeRate", as
     });
     
     const data = await response.json();
-    console.log(data);
     return {
       tripId: tripId,
       baseCurrency: baseCurrency,

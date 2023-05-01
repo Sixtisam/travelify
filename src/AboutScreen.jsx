@@ -1,33 +1,33 @@
 import * as licenses from "./licenses.json";
 
-import { Box, Divider, Flex, HStack, Heading, Image, Link, Text, VStack, useToken } from "native-base";
-import { FlatList, Linking, ScrollView } from "react-native";
+import { Box, Divider, HStack, Heading, Image, Link, Pressable, Text, VStack } from "native-base";
+import { FlatList } from "react-native";
 
+import { useNavigation } from "@react-navigation/native";
 import Constants from "expo-constants";
-import MyPressable from "./MyPressable";
 import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { boxShadow } from "styled-system";
 
 const transformedLicenses = Object.entries(licenses).map(([name, infos]) => {
-  const lastAtIndex = name.lastIndexOf("@");
   return {
-    name: name.substring(0, lastAtIndex),
+    name,
     repoUrl: infos.repository,
   };
 });
 
 export default function AboutScreen() {
+  const navigation = useNavigation();
   const aboveList = (
     <VStack divider={<Divider />}>
       <VStack mb={4}>
-        <Box px={8} py={10} bg="primary.500">
-          <Image
-            alt="Travelify"
-            style={{ width: "100%", height: undefined, aspectRatio: 800 / 293, resizeMode: "contain" }}
-            source={require("../assets/nav_header.png")}
-          />
-        </Box>
+        <Pressable onPress={() => navigation.openDrawer()}>
+          <Box px={8} py={10} bg="primary.500">
+            <Image
+              alt="Travelify"
+              style={{ width: "100%", height: undefined, aspectRatio: 800 / 293, resizeMode: "contain" }}
+              source={require("../assets/nav_header.png")}
+            />
+          </Box>
+        </Pressable>
         <Text fontSize="sm" mx="auto" my={3}>
           Version {Constants.manifest.version}
         </Text>
@@ -35,7 +35,7 @@ export default function AboutScreen() {
           &copy; by Samuel Keusch 2021
         </Text>
       </VStack>
-      <VStack space={1} alignItems="center" marginBottom={4} alignItems="flex-start">
+      <VStack space={1} marginBottom={4} alignItems="flex-start">
         <Heading size="lg" my={4} mx="auto">
           Credits
         </Heading>

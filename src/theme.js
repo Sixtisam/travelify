@@ -13,6 +13,7 @@ const customTheme = {
       800: "#064c61",
       900: "#003749",
     },
+    unset: undefined
   },
   fontConfig: {
     Inter: {
@@ -49,6 +50,24 @@ const customTheme = {
     heading: "Inter",
     body: "Inter",
     mono: "Inter",
+  },
+  components: {
+    Input: {
+      defaultProps: {
+        _input: {
+          selectionColor: "#b1def0",
+          cursorColor: "#37839f",
+        },
+      },
+    },
+    TextArea: {
+      defaultProps: {
+        _input: {
+          selectionColor: undefined,
+          cursorColor: "#37839f",
+        },
+      },
+    },
   },
 };
 export default extendTheme(customTheme);

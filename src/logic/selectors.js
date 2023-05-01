@@ -2,6 +2,7 @@ import { createIdSelector, createSelector } from "redux-views";
 
 export const getTripIdSelector = createIdSelector((props) => props.tripId);
 export const getMateIdSelector = createIdSelector((props) => props.mateId);
+export const getExpenseIdSelector = createIdSelector((props) => props.expenseId);
 export const getAllTripsSelector = (state) => state.trips;
 export const getMateNamesSelector = (state) => state.mateNames;
 export const getCurrenciesSelector = (state) => state.config.currencies;
@@ -23,3 +24,18 @@ export const getMateNameProposalsSelector = createSelector(
 );
 
 export const getTripSelector = createSelector([getTripIdSelector, getAllTripsSelector], (tripId, trips) => trips[tripId]);
+
+export const getMateSelector = createSelector([getTripIdSelector, getMateIdSelector, getAllTripsSelector], (tripId, mateId, trips) => [
+  trips[tripId],
+  trips[tripId].mates[mateId],
+]);
+
+export const getMateExpensesSelector = createSelector(
+  [getTripIdSelector, getMateIdSelector, getAllTripsSelector],
+  (tripId, mateId, trips) => (Object.values(trips[tripId].expenses) || []).filter((exp) => exp.mateId === mateId)
+);
+
+export const getExpenseSelector = createSelector(
+  [getTripIdSelector, getExpenseIdSelector, getAllTripsSelector],
+  (tripId, expenseId, trips) => [trips[tripId], trips[tripId].expenses[expenseId]]
+);

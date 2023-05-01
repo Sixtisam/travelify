@@ -20,5 +20,6 @@ export const createTrip = createAsyncThunk("trips/create", async ({ title, baseC
     baseCurrency,
     evtCreated: getCurrentTimestampSec(),
     mates,
+    expenses: {},
   };
 });

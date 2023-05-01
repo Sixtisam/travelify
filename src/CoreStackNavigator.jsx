@@ -8,6 +8,8 @@ import TripDetailScreen from "./TripDetailScreen";
 import TripListScreen from "./TripListScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useTheme as useNavTheme } from "@react-navigation/native";
+import ExpenseForm from "./ExpenseForm";
+import ExpenseDetailScreen from "./ExpenseDetailScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +31,7 @@ export default function CoreStackNavigator() {
       <Stack.Screen name="CreateMate" options={{ title: "New Mate" }} component={CreateMateScreen} />
       <Stack.Screen name="CreateTrip" options={{ title: "New Trip" }} component={CreateTripScreen} />
       <Stack.Screen name="CreateExpense" options={{ title: "New Expense" }} component={CreateExpenseScreen} />
+      <Stack.Screen name="ExpenseDetail" options={{ title: "Expense" }} component={ExpenseDetailScreen} />
       <Stack.Screen name="ExchangeRatesTrip" component={ExchangeRatesTripScreen} />
     </Stack.Navigator>
   );
