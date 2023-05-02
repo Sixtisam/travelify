@@ -3,7 +3,7 @@
     "name": "Travelify",
     "privacy": "public",
     "slug": "travelify",
-    "version": "4.0.1",
+    "version": "4.1.0",
     "githubUrl": "https://github.com/Sixtisam/travelify",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,8 @@
       "backgroundColor": "#37839f"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/32cfa674-0728-47af-a1b3-4594dd3ceca6"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -43,7 +44,7 @@
       ],
       "backgroundColor": "#ffffff",
       "package": "net.skeeks.travelify2",
-      "versionCode": 14,
+      "versionCode": 15,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-foreground.png",
         "backgroundColor": "#37839f"
@@ -52,5 +53,8 @@
         "backgroundColor": "#37839f"
       }
     },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
   }
 }

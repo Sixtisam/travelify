@@ -35,14 +35,14 @@ export function useTotalTripCost(trip) {
 
 export function useTotalMateExpenses(mate, trip) {
   return useMemo(() => {
-    if (!trip || !trip.exchangeRates || Object.values(trip.exchangeRates).length === 0) return null;
+    if (!trip || !mate || !trip.exchangeRates || Object.values(trip.exchangeRates).length === 0) return null;
     return calcTotalMateExpenses(mate, trip);
   }, [mate, trip]);
 }
 
 export function useTotalMateConsumption(mate, trip) {
   return useMemo(() => {
-    if (!trip || !trip.exchangeRates || Object.values(trip.exchangeRates).length === 0) return null;
+    if (!trip || !mate ||  !trip.exchangeRates || Object.values(trip.exchangeRates).length === 0) return null;
     return calcTotalMateConsumption(mate, trip);
   }, [mate, trip]);
 }

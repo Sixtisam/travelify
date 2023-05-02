@@ -1,13 +1,20 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AlertDialog, Button } from "native-base";
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteMate } from "./data/store";
+import { useTotalMateConsumption, useTotalMateExpenses } from "./logic/hooks";
+import { getTripSelector } from "./logic/selectors";
 
 export default function DeleteMateAlert({ tripId, mate, show, hide }) {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const route = useRoute();
+
+  const trip = useSelector((state) => getTripSelector(state, { tripId }));
+  const totalMateConsumption = useTotalMateConsumption(mate, trip);
+  const totalMateExpenses = useTotalMateExpenses(mate, trip);
+  const deletable = totalMateConsumption == 0.0 && totalMateExpenses == 0.0;
 
   const onDelete = () => {
     hide();
@@ -23,10 +30,14 @@ export default function DeleteMateAlert({ tripId, mate, show, hide }) {
         <AlertDialog.Header fontSize="lg" fontWeight="bold">
           {"Delete " + (mate?.name || "mate")}
         </AlertDialog.Header>
-        <AlertDialog.Body>Are you sure? You can't undo this action afterwards.</AlertDialog.Body>
+        {deletable ? (
+          <AlertDialog.Body>Are you sure? You can't undo this action afterwards.</AlertDialog.Body>
+        ) : (
+          <AlertDialog.Body>{"You cannot delete " + (mate?.name || "mate") + " as he still have expenses and/or consumptions."}</AlertDialog.Body>
+        )}
         <AlertDialog.Footer>
           <Button onPress={hide}>Cancel</Button>
-          <Button colorScheme="red" onPress={onDelete} ml={3} _text={{ color: "white" }}>
+          <Button isDisabled={!deletable} colorScheme="red" onPress={onDelete} ml={3} _text={{ color: "white" }}>
             Delete
           </Button>
         </AlertDialog.Footer>

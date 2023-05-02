@@ -154,7 +154,7 @@ const ExpenseForm = forwardRef(({ trip, expense, onSubmit, onDelete }, ref) => {
                   size="md"
                   textAlign="right"
                   selectTextOnFocus
-                  value={((formData.shares[mate.id] || 0.0) * 1.0).toFixed(2) + ""}
+                  value={formData.shares[mate.id] + ""}
                   rightElement={<Text>{formData.currency}</Text>}
                   onChangeText={(val) => updateShare(mate.id, val, false)}
                 />
