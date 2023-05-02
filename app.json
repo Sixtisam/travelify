@@ -3,7 +3,7 @@
     "name": "Travelify",
     "privacy": "public",
     "slug": "travelify",
-    "version": "4.1.0",
+    "version": "4.1.1",
     "githubUrl": "https://github.com/Sixtisam/travelify",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -44,7 +44,7 @@
       ],
       "backgroundColor": "#ffffff",
       "package": "net.skeeks.travelify2",
-      "versionCode": 15,
+      "versionCode": 16,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-foreground.png",
         "backgroundColor": "#37839f"
